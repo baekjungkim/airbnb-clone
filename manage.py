@@ -3,6 +3,8 @@
 import os
 import sys
 
+import dotenv  # noqa
+
 
 def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
@@ -18,4 +20,5 @@ def main():
 
 
 if __name__ == "__main__":
+    dotenv.read_dotenv()
     main()
