@@ -1,0 +1,28 @@
+● Python & Django 명령어
+
+1. pipenv --three : 3.x 버전의 Python vertual 환경을 만들어라.
+2. pipenv shell : 만들어진 Python vertual 환경에 입장. ⇄ exit 퇴장
+3. pipenv install cookiecutter : cookiecutter 패키지를 Python vertual 환경에 설치.
+4. cookiecutter https://github.com/pydanny/cookiecutter-django : 잘만들어진 Python Django 프로젝트를 cookiecutting.
+5. pipenv install -r requirements/local.txt : Python 의 local에서 꼭 설치해야하는 패키지를 설치
+    5번의 작업에서 에러가 났을 경우 :
+    pip install -U setuptools
+    pip install -U pip
+    pipenv install -r requirements/local.txt
+6. django-admin startapp {APP_NAME} : APP 생성 명령어. ※ 해당 프로젝트의 app 폴더에서 실행할 것. 
+    - 현재 프로젝트에서는 cd whynot_backend를 해주고 실행. 경로> ~/Documents/whynot_backend/whynot_backend 에서 실행
+7. python manage.py makemigrations : 앱들의 models.py의 migrations 를 만들어줌.
+8. python manage.py migrate : 해당 프로젝트와 연결되어 있는 DB와 migration을 진행
+9. python manage.py createsuperuser : 해당 프로젝트의 SUPERUSER를 만듦.
+
+● Git 명령어
+1. git init : 해당 프로젝트에서 git을 사용.
+2. git remote add origin {YOUR_GIHTUB_URL} : 해당 프로젝트와 나의 github 를 연결.
+3. git pull origin master : github 의 데이터를 당겨옴.
+4. git add . : 변경된 모든 파일을 stage로 등록.
+5. git commit -m "First commmit" : stage에 등록된 모든 파일들에 comment 를 남기면서 commit 함.
+6. git push origin master : commit 된 모든 파일들을 나의 github로 저장.
+
+
+
+

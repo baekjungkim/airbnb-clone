@@ -144,6 +144,3 @@ static
 
 # Mac
 .DS_Store
-
-# secret
-secrets.json
