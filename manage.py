@@ -3,7 +3,7 @@
 import os
 import sys
 
-import dotenv  # noqa
+import dotenv  # noqa: F401: F401
 
 
 def main():

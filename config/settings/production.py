@@ -1,5 +1,5 @@
-import os  # noqa
-from .base import *  # noqa
+import os  # noqa: F401
+from .base import *  # noqa: F401, F403
 
 SECRET_KEY = os.environ.get("DJANGO_PRD_SECRET_KEY")
 
