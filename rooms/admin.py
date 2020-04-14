@@ -12,8 +12,6 @@ class ItemAdmin(admin.ModelAdmin):
     def used_by(self, obj):
         return obj.rooms.count()
 
-    pass
-
 
 @admin.register(models.Room)
 class RoomAdmin(admin.ModelAdmin):
