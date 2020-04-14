@@ -47,4 +47,8 @@ class CustomUserAdmin(UserAdmin):
         "superhost",
         "is_staff",
         "is_superuser",
+        "count_rooms",
     )
+
+    def count_rooms(self, obj):
+        return obj.rooms.count()
