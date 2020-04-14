@@ -10,6 +10,8 @@ class ItemAdmin(admin.ModelAdmin):
 
     list_display = ("name", "used_by")
 
+    ordering = ("name",)
+
     def used_by(self, obj):
         return obj.rooms.count()
 
