@@ -1,12 +1,12 @@
 import random
+from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
-from django.contrib.admin.utils import flatten
 from django_seed import Seed
-from lists import models as list_models
+from reservations import models as reservation_models
 from users import models as user_models
 from rooms import models as room_models
 
-NAME = "lists"
+NAME = "reservations"
 
 
 class Command(BaseCommand):
@@ -27,22 +27,20 @@ class Command(BaseCommand):
 
         all_users = user_models.User.objects.all()
         all_rooms = room_models.Room.objects.all()
+        all_status = reservation_models.Status.objects.exclude(name="Pending")
 
         seeder.add_entity(
-            list_models.List,
+            reservation_models.Reservation,
             number,
             {
-                "name": lambda x: f"{seeder.faker.street_suffix()} Lists",
-                "user": lambda x: random.choice(all_users),
+                "guest": lambda x: random.choice(all_users),
+                "room": lambda x: random.choice(all_rooms),
+                "status": lambda x: random.choice(all_status),
+                "check_in": lambda x: datetime.now(),
+                "check_out": lambda x: datetime.now()
+                + timedelta(days=random.randint(3, 25)),
             },
         )
-        created_lists = seeder.execute()
-        created_clean = flatten(list(created_lists.values()))
-        for pk in created_clean:
-            get_list = list_models.List.objects.get(pk=pk)
-            to_add = all_rooms[
-                random.randint(0, 5) : random.randint(6, 30)  # noqa: E203
-            ]
-            get_list.rooms.add(*to_add)  # unpack operator
 
+        seeder.execute()
         self.stdout.write(self.style.SUCCESS(f"{number} {NAME} created!"))
