@@ -67,4 +67,40 @@ def search(request):
         "house_rules": house_rules,
     }
 
-    return render(request, "rooms/search.html", {**form, **choices},)
+    filter_args = {}
+
+    if city != "":
+        filter_args["city__startswith"] = city
+
+    filter_args["country__exact"] = s_country
+
+    if s_room_type != 0:
+        filter_args["room_type__pk"] = s_room_type
+
+    if int(price) != 0:
+        filter_args["price__lte"] = price
+
+    if int(guest) != 0:
+        filter_args["guests__gte"] = guest
+
+    if int(bedrooms) != 0:
+        filter_args["bedrooms__gte"] = bedrooms
+
+    if int(beds) != 0:
+        filter_args["beds__gte"] = beds
+
+    if int(baths) != 0:
+        filter_args["baths__gte"] = baths
+
+    filter_args["instant_book__exact"] = instant
+
+    # super_host = request.GET.get("super_host", False)
+    # s_amenities = request.GET.getlist("amenities")
+    # s_facilities = request.GET.getlist("facilities")
+    # s_house_rules = request.GET.getlist("house_rules")
+
+    print(filter_args)
+
+    rooms = models.Room.objects.filter(**filter_args)
+
+    return render(request, "rooms/search.html", {**form, **choices, "rooms": rooms},)
