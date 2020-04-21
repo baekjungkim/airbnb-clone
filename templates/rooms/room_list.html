@@ -5,7 +5,9 @@
 {% block content %}
 
   {% for room in rooms %}
-      <h1>{{room.name}} / ${{room.price}}</h1>
+      <h3>
+        <a href="{% url "rooms:detail" room.pk %}"> {{room.name}} / ${{room.price}}</a>
+      </h3>
   {% endfor %}
 
   <h5>
@@ -21,9 +23,6 @@
       <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
     {% endif %}
 
-    {% for page in page_obj.paginator.page_range %}
-      <a href="?page={{page}}">{{page}}<a>
-    {% endfor %}
   </h5>
 
 
