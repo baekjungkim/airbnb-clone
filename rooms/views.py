@@ -28,12 +28,12 @@ def search(request):
     s_country = request.GET.get("country", "KR")
     s_room_type = int(request.GET.get("room_type", 0))
     price = request.GET.get("price", 0)
-    guest = request.GET.get("guest", 0)
+    guests = request.GET.get("guests", 0)
     bedrooms = request.GET.get("bedrooms", 0)
     beds = request.GET.get("beds", 0)
     baths = request.GET.get("baths", 0)
-    instant = request.GET.get("instant", False)
-    super_host = request.GET.get("super_host", False)
+    instant = bool(request.GET.get("instant", False))
+    superhost = bool(request.GET.get("superhost", False))
     s_amenities = request.GET.getlist("amenities")
     s_facilities = request.GET.getlist("facilities")
     s_house_rules = request.GET.getlist("house_rules")
@@ -43,12 +43,12 @@ def search(request):
         "s_country": s_country,
         "s_room_type": s_room_type,
         "price": price,
-        "guest": guest,
+        "guests": guests,
         "bedrooms": bedrooms,
         "beds": beds,
         "baths": baths,
         "instant": instant,
-        "super_host": super_host,
+        "superhost": superhost,
         "s_amenities": s_amenities,
         "s_facilities": s_facilities,
         "s_house_rules": s_house_rules,
@@ -80,8 +80,8 @@ def search(request):
     if int(price) != 0:
         filter_args["price__lte"] = price
 
-    if int(guest) != 0:
-        filter_args["guests__gte"] = guest
+    if int(guests) != 0:
+        filter_args["guests__gte"] = guests
 
     if int(bedrooms) != 0:
         filter_args["bedrooms__gte"] = bedrooms
@@ -92,9 +92,19 @@ def search(request):
     if int(baths) != 0:
         filter_args["baths__gte"] = baths
 
-    filter_args["instant_book__exact"] = instant
+    if instant is True:
+        filter_args["instant_book__exact"] = True
 
-    # super_host = request.GET.get("super_host", False)
+    if superhost is True:
+        filter_args["host__superhost"] = True
+
+    if len(s_amenities) > 0:
+        for s_amenity in s_amenities:
+            filter_args["amenities__pk"] = int(s_amenity)
+
+    if len(s_facilities) > 0:
+        for s_facility in s_facilities:
+            filter_args["facilities__pk"] = int(s_facility)
     # s_amenities = request.GET.getlist("amenities")
     # s_facilities = request.GET.getlist("facilities")
     # s_house_rules = request.GET.getlist("house_rules")

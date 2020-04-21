@@ -42,8 +42,8 @@
         </div>
 
         <div>
-            <label for="guest">Guest</label>
-            <input type="number" name="guest" id="guest" value="{{guest}}" placeholder="Guest" />
+            <label for="guests">Guests</label>
+            <input type="number" name="guests" id="guests" value="{{guests}}" placeholder="Guests" />
         </div>
 
         <div>
@@ -63,12 +63,12 @@
 
         <div>
             <label for="instant">Instant Book Only?</label>
-            <input type="checkbox" name="instant" id="instant" value="True" {% if instant %}checked{% endif %}/>
+            <input type="checkbox" name="instant" id="instant" {% if instant %}checked{% endif %}/>
         </div>
 
         <div>
-            <label for="super_host">By Superhost Only?</label>
-            <input type="checkbox" name="super_host" id="super_host" value="True" {% if super_host%}checked{% endif %}/>
+            <label for="superhost">By Superhost Only?</label>
+            <input type="checkbox" name="superhost" id="superhost" {% if superhost%}checked{% endif %}/>
         </div>
 
         <div>
