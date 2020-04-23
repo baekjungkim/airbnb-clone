@@ -1,7 +1,7 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 from django.shortcuts import render
-from django_countries import countries
-from . import models
+from django.core.paginator import Paginator
+from . import models, forms
 
 
 class HomeView(ListView):
@@ -22,90 +22,96 @@ class RoomDetail(DetailView):
     model = models.Room
 
 
-def search(request):
-    city = request.GET.get("city", "Anywhere")
-    city = str.capitalize(city)
-    s_country = request.GET.get("country", "KR")
-    s_room_type = int(request.GET.get("room_type", 0))
-    price = request.GET.get("price", 0)
-    guests = request.GET.get("guests", 0)
-    bedrooms = request.GET.get("bedrooms", 0)
-    beds = request.GET.get("beds", 0)
-    baths = request.GET.get("baths", 0)
-    instant = bool(request.GET.get("instant", False))
-    superhost = bool(request.GET.get("superhost", False))
-    s_amenities = request.GET.getlist("amenities")
-    s_facilities = request.GET.getlist("facilities")
-    s_house_rules = request.GET.getlist("house_rules")
+class SearchView(View):
 
-    form = {
-        "city": city,
-        "s_country": s_country,
-        "s_room_type": s_room_type,
-        "price": price,
-        "guests": guests,
-        "bedrooms": bedrooms,
-        "beds": beds,
-        "baths": baths,
-        "instant": instant,
-        "superhost": superhost,
-        "s_amenities": s_amenities,
-        "s_facilities": s_facilities,
-        "s_house_rules": s_house_rules,
-    }
+    """ SearchView Definition """
 
-    room_types = models.RoomType.objects.all()
-    amenities = models.Amenity.objects.all()
-    facilities = models.Facility.objects.all()
-    house_rules = models.HouseRule.objects.all()
+    def get(self, request):
 
-    choices = {
-        "countries": countries,
-        "room_types": room_types,
-        "amenities": amenities,
-        "facilities": facilities,
-        "house_rules": house_rules,
-    }
+        get_copy = request.GET.copy()
+        parameters = get_copy.pop("page", True) and get_copy.urlencode()
 
-    filter_args = {}
+        country = request.GET.get("country")
 
-    if city != "":
-        filter_args["city__startswith"] = city
+        if country:
 
-    filter_args["country__exact"] = s_country
+            form = forms.SearchForm(request.GET)
 
-    if s_room_type != 0:
-        filter_args["room_type__pk"] = s_room_type
+            if form.is_valid():
 
-    if int(price) != 0:
-        filter_args["price__lte"] = price
+                city = form.cleaned_data.get("city")
+                country = form.cleaned_data.get("country")
+                room_type = form.cleaned_data.get("room_type")
+                price = form.cleaned_data.get("price")
+                guests = form.cleaned_data.get("guests")
+                bedrooms = form.cleaned_data.get("bedrooms")
+                beds = form.cleaned_data.get("beds")
+                baths = form.cleaned_data.get("baths")
+                instant_book = form.cleaned_data.get("instant_book")
+                superhost = form.cleaned_data.get("superhost")
+                amenities = form.cleaned_data.get("amenities")
+                facilities = form.cleaned_data.get("facilities")
+                house_rules = form.cleaned_data.get("house_rules")
 
-    if int(guests) != 0:
-        filter_args["guests__gte"] = guests
+                filter_args = {}
 
-    if int(bedrooms) != 0:
-        filter_args["bedrooms__gte"] = bedrooms
+                if city != "Anywhere":
+                    filter_args["city__startswith"] = city
 
-    if int(beds) != 0:
-        filter_args["beds__gte"] = beds
+                filter_args["country"] = country
 
-    if int(baths) != 0:
-        filter_args["baths__gte"] = baths
+                if room_type is not None:
+                    filter_args["room_type"] = room_type
 
-    if instant is True:
-        filter_args["instant_book__exact"] = True
+                if price is not None:
+                    filter_args["price__lte"] = price
 
-    if superhost is True:
-        filter_args["host__superhost"] = True
+                if guests is not None:
+                    filter_args["guests__gte"] = guests
 
-    rooms = models.Room.objects.filter(**filter_args)
+                if bedrooms is not None:
+                    filter_args["bedrooms__gte"] = bedrooms
 
-    if len(s_amenities) != 0:
-        for s_amenity in s_amenities:
-            rooms = rooms.filter(amenities__pk=int(s_amenity))
+                if beds is not None:
+                    filter_args["beds__gte"] = beds
 
-    if len(s_facilities) != 0:
-        for s_facility in s_facilities:
-            rooms = rooms.filter(facilities__pk=int(s_facility))
+                if baths is not None:
+                    filter_args["baths__gte"] = baths
 
-    return render(request, "rooms/search.html", {**form, **choices, "rooms": rooms},)
+                if instant_book is True:
+                    filter_args["instant_book"] = True
+
+                if superhost is True:
+                    filter_args["host__superhost"] = True
+
+                qs = models.Room.objects.filter(**filter_args).order_by("-created")
+
+                if amenities is not None:
+                    for amenity in amenities:
+                        qs = qs.filter(amenities=amenity)
+
+                if facilities is not None:
+                    for facility in facilities:
+                        qs = qs.filter(facilities=facility)
+
+                if house_rules is not None:
+                    for house_rule in house_rules:
+                        qs = qs.filter(house_rules__pk=house_rule.pk)
+
+                paginator = Paginator(qs, 10, orphans=5)
+
+                page = request.GET.get("page", 1)
+
+                rooms = paginator.get_page(page)
+
+                return render(
+                    request,
+                    "rooms/search.html",
+                    {"form": form, "rooms": rooms, "parameters": parameters},
+                )
+
+        else:
+
+            form = forms.SearchForm()
+
+        return render(request, "rooms/search.html", {"form": form},)
