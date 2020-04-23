@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("", include("core.urls", namespace="core")),
     path("rooms/", include("rooms.urls", namespace="rooms")),
+    path("users/", include("users.urls", namespace="users")),
     path("jet/", include("jet.urls", "jet")),  # Django JET URLS
     path(
         "jet/dashboard/",

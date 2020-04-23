@@ -1,35 +1,33 @@
-from django.views import View
+from django.views.generic import FormView
+from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from . import forms
 
 
-class LoginView(View):
+class SignUpView(FormView):
 
-    """ Login View Definition """
+    """ SignUp View Definition """
 
-    def get(self, request):
+    template_name = "users/signup.html"
+    form_class = forms.SignUpForm
+    success_url = reverse_lazy("core:home")
+    initial = {
+        "first_name": "Baek",
+        "last_name": "Kim",
+        "email": "zvgandam@naver.com",
+    }
 
-        form = forms.LoginForm()
+    def form_valid(self, form):
+        # 유저 저장
+        form.save()
 
-        return render(request, "login.html", {"form": form})
+        # 유저 로그인
+        email = form.cleaned_data.get("email")
+        password = form.cleaned_data.get("password")
+        user = authenticate(self.request, username=email, password=password)
 
-    def post(self, request):
+        if user is not None:
+            login(self.request, user)
 
-        form = forms.LoginForm(request.POST)
-
-        if form.is_valid():
-            email = form.cleaned_data.get("email")
-            password = form.cleaned_data.get("password")
-            user = authenticate(request, username=email, password=password)
-
-            if user is not None:
-                login(request, user)
-                return redirect(reverse("core:home"))
-
-        return render(request, "login.html", {"form": form})
-
-
-def log_out(request):
-    logout(request)
-    return redirect(reverse("core:home"))
+        return super().form_valid(form)
