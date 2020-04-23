@@ -38,3 +38,4 @@ class User(AbstractUser):
         choices=CURRENCY_CHOICES, max_length=5, blank=True, default=CURRENCY_KRW
     )
     superhost = models.BooleanField(default=False)
+    email_confirmed = models.BooleanField(default=False)

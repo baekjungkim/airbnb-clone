@@ -11,8 +11,8 @@ class SignUpForm(forms.ModelForm):
         model = models.User
         fields = ("first_name", "last_name", "email")
 
-    password = forms.CharField(widget=forms.PasswordInput)
-    password1 = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
+    password = forms.CharField(widget=forms.PasswordInput, label="비밀번호")
+    password1 = forms.CharField(widget=forms.PasswordInput, label="비밀번호 확인")
 
     def clean_password1(self):
 
